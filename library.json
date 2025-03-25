@@ -1,0 +1,20 @@
+{
+  "name": "EZLog",
+  "version": "1.0.0",
+  "keywords": "Arduino, ESP32, Logging, Conversion",
+  "description": "An easy Logging-Framework for ESP32",
+  "authors":
+  [
+    {
+      "name": "René Huber",
+      "email": "rene.huber@rhse.at",
+      "maintainer": true
+    }
+  ],
+  "frameworks": "*",
+  "platforms": "raspberrypi, espressif8266, espressif32, ststm32",
+  "dependencies":  {
+    "ArduinoJson": "^6.21.5"
+  },
+  "headers": "EZLog.h"
+}

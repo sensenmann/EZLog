@@ -1,0 +1,5 @@
+.idea
+.pio
+examples/**/.pio
+platformio.ini
+/logs/*.log
