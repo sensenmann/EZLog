@@ -1,13 +1,13 @@
 #include "Loggable.h"
 #include "EZLog.h"
 
-#ifndef DISABLE_ALL_LOGGING
+#ifndef EZLOG_DISABLE_COMPLETELY
     String _extractClassName(const String &filePath) {
-        int lastSlash = filePath.lastIndexOf('/');
-        int lastBackslash = filePath.lastIndexOf('\\');
-        int start = (lastSlash > lastBackslash) ? lastSlash + 1 : lastBackslash + 1;
+        const int lastSlash = filePath.lastIndexOf('/');
+        const int lastBackslash = filePath.lastIndexOf('\\');
+        const int start = (lastSlash > lastBackslash) ? lastSlash + 1 : lastBackslash + 1;
 
-        int lastDot = filePath.lastIndexOf('.');
+        const int lastDot = filePath.lastIndexOf('.');
         if (lastDot > start) {
             return filePath.substring(start, lastDot);  // Entfernt den Pfad und die Dateiendung
         }
@@ -27,18 +27,18 @@
     }
 
     AutoLog::AutoLog(const String &cls, const String &method) {
-        Log::start(cls, method);
+        EZLog::start(cls, method);
     }
 
     AutoLog::~AutoLog() {
-        Log::end();
+        EZLog::end();
     }
 
     AutoLogFree::AutoLogFree(const String &fileName, const String &method) {
-        Log::start(extractClassName(fileName), method);
+        EZLog::start(extractClassName(fileName), method);
     }
 
     AutoLogFree::~AutoLogFree() {
-        Log::end();
+        EZLog::end();
     }
 #endif

@@ -1,9 +1,6 @@
-# EZLog
-An easy Logging-Framework for ESP32.
+# EZLog IDE Integration
 
-## Setup up yor IDE
-
-### Setting up platformio
+## PlatformIO
 Add EZLog to your dependencies in your `platform.ini`
 
 ```ini
@@ -12,7 +9,7 @@ lib_deps =
     ...
 ```
 
-### Setting up ArduinoIDE
+## Arduino IDE
 - Download the latest ZIP-File from [Releases](https://github.com/sensenmann/EZLog/releases)
 - Open ArduinoIDE
   - Sketch -> Include Library -> Add .ZIP Library
