@@ -1,4 +1,4 @@
-![Logo](https://github.com/sensenmann/EZLog/blob/code-cleanup/doc/EZLog_small.png?raw=true)
+![Logo](https://github.com/sensenmann/EZLog/blob/main/doc/EZLog_small.png?raw=true)
 
 [![GitHub Stars](https://img.shields.io/github/stars/sensenmann/EZLog?style=social)](https://github.com/sensenmann/EZLog/stargazers)
 [![GitHub Forks](https://img.shields.io/github/forks/sensenmann/EZLog?style=social)](https://github.com/sensenmann/EZLog/network/members)
@@ -31,7 +31,7 @@ An easy Logging-Framework for ESP32.
 - Multicore/-thread Support
 - Logging **Filters** configurable
 
-![Example](https://github.com/sensenmann/EZLog/blob/develop/doc/console-output1.png?raw=true)
+![Example](https://github.com/sensenmann/EZLog/blob/main/doc/console-output1.png?raw=true)
 
 
 ## Quickstart
@@ -93,7 +93,7 @@ void loop() {
 }
 ```
 
-![Example](https://github.com/sensenmann/EZLog/blob/develop/doc/console-output2.png?raw=true)
+![Example](https://github.com/sensenmann/EZLog/blob/main/doc/console-output2.png?raw=true)
 
 
 The easiest way to implement EZLog in a Class context is deriving from `Loggable` and implementing the `fileName()` Method.  
