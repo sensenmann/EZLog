@@ -70,12 +70,6 @@ public:
     static void updateConfig(const LoggingConfig& _loggingConfig);
 
 
-    // Funktion zum Serialisieren der LoggingConfig in JSON
-    static String serializeLoggingConfig(const LoggingConfig& config);
-    // Funktion zum Deserialisieren der LoggingConfig aus JSON
-    static void deserializeLoggingConfig(const String& json, LoggingConfig& config);
-
-
     static void start(const String& cls, const String& method);
     static void end();
 

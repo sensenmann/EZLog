@@ -1,6 +1,5 @@
 #include "EZLog.h"
 #include <sstream>
-#include <ArduinoJson.h>
 #include <esp_debug_helpers.h>
 #include <map>
 #include <mutex>
@@ -662,76 +661,6 @@ String EZLog::formatNumber(const int number) {
         }
     }
     return formattedNumber.c_str();
-}
-
-
-String EZLog::serializeLoggingConfig(const LoggingConfig& config) {
-    StaticJsonDocument<2048> doc;
-    doc["enabled"] = config.enabled;
-    doc["addMemInfo"] = config.addMemInfo;
-    doc["overrideLogAll"] = config.overrideLogAll;
-    doc["printStartEndMessages"] = config.printStartEndMessages;
-    doc["restartESPonError"] = config.restartESPonError;
-    doc["loglevel"] = (int)config.loglevel;
-
-    JsonArray elements = doc.createNestedArray("elements");
-
-    std::function<void(const std::vector<LoggingElement>&, JsonArray&)> serializeElements;
-    serializeElements = [&](const std::vector<LoggingElement>& subElements, const JsonArray& jsonArray) {
-        for (const auto& elem : subElements) {
-            JsonObject obj = jsonArray.createNestedObject();
-            obj["filter"] = elem.filter;
-            obj["loglevel"] = static_cast<int>(elem.loglevel);
-
-            if (!elem.subElements.empty()) {
-                JsonArray subArray = obj.createNestedArray("subElements");
-                serializeElements(elem.subElements, subArray);
-            }
-        }
-    };
-
-    serializeElements(config.customLoggingElements, elements);
-
-    String output;
-    serializeJson(doc, output);
-    return output;
-}
-
-void EZLog::deserializeLoggingConfig(const String& json, LoggingConfig& config) {
-    StaticJsonDocument<2048> doc;
-    const DeserializationError error = deserializeJson(doc, json);
-    if (error) {
-        Serial.println("Failed to parse JSON");
-        return;
-    }
-
-    config.enabled = doc["enabled"].as<bool>();
-    config.addMemInfo = doc["addMemInfo"].as<bool>();
-    config.overrideLogAll = doc["overrideLogAll"].as<bool>();
-    config.printStartEndMessages = doc["printStartEndMessages"].as<bool>();
-    config.restartESPonError = doc["restartESPonError"].as<bool>();
-    config.loglevel = static_cast<Loglevel>(doc["loglevel"].as<int>());
-
-    config.customLoggingElements.clear();
-
-    std::function<void(JsonArray, std::vector<LoggingElement>&)> deserializeElements;
-    deserializeElements = [&](JsonArray jsonArray, std::vector<LoggingElement>& elements) {
-        for (JsonObject obj : jsonArray) {
-            auto elem = LoggingElement(
-                obj["filter"].as<String>(),
-                static_cast<Loglevel>(obj["loglevel"].as<int>())
-            );
-
-            if (obj.containsKey("subElements")) {
-                auto subArray = obj["subElements"].as<JsonArray>();
-                deserializeElements(subArray, elem.subElements);
-            }
-
-            elements.push_back(elem);
-        }
-    };
-
-    deserializeElements(doc["elements"].as<JsonArray>(), config.customLoggingElements);
 }
 
 
