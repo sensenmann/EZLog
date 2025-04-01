@@ -21,10 +21,10 @@ struct LoggingElement {
     Loglevel loglevel = Loglevel::WARN;
     std::vector<LoggingElement> subElements;
 
-    LoggingElement(const String& filter, Loglevel loglevel) : filter(filter), loglevel(loglevel) {};
+    LoggingElement(const String& _filter, Loglevel _loglevel) : filter(_filter), loglevel(_loglevel) {};
 
-    LoggingElement(const String& filter, const std::vector<LoggingElement>& subElements) : filter(filter),
-        subElements(subElements) {
+    LoggingElement(const String& _filter, const std::vector<LoggingElement>& _subElements) : filter(_filter),
+        subElements(_subElements) {
     };
 };
 

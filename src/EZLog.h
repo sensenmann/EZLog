@@ -31,7 +31,7 @@ public:
     /**
      * Creates a EZLog-Instance for a taskID (usefull for multiple Threads)
      */
-    EZLog(int taskID) { this->taskID = taskID; }
+    EZLog(int _taskID) { this->taskID = _taskID; }
 
     static String loglevelStrings[];
 
