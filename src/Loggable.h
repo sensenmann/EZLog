@@ -8,7 +8,10 @@
     public:
         AutoLog(const String& cls, const String& method);
         ~AutoLog();
+    private:
+        bool enabled = false;
     };
+
 
 
     class Loggable {
@@ -40,6 +43,7 @@
         ~AutoLogFree();
     private:
         static String extractClassName(const String& filePath);
+        bool enabled = false;
     };
 
     // Makro for Logging in this free functions

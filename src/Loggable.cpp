@@ -27,15 +27,15 @@
     }
 
     AutoLog::AutoLog(const String &cls, const String &method) {
-        EZLog::start(cls, method);
+       enabled = EZLog::start(cls, method);
     }
 
     AutoLog::~AutoLog() {
-        EZLog::end();
+        if (enabled) EZLog::end();
     }
 
     AutoLogFree::AutoLogFree(const String &fileName, const String &method) {
-        EZLog::start(extractClassName(fileName), method);
+        enabled = EZLog::start(extractClassName(fileName), method);
     }
 
     AutoLogFree::~AutoLogFree() {
