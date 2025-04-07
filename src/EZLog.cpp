@@ -332,8 +332,12 @@ String EZLog::_colorPrefix(String prefix, boolean isStart, boolean isEnd) {
     return retVal;
 }
 
-String EZLog::getBGColor() {
-    const int colorIdx = taskID <= TaskIdColors.size() ? taskID - 1 : 0;
+String EZLog::getBGColor() const {
+    if (taskID == 1) return TaskIdBGColors[0];
+
+    // Rolliere ab Index 1 (also ab dem 2. Eintrag)
+    const int numColors = TaskIdBGColors.size() - 1;
+    int colorIdx = ((taskID - 2) % numColors) + 1;
     return TaskIdBGColors[colorIdx];
 }
 
@@ -672,23 +676,27 @@ String EZLog::loglevelStrings[] = {
     "[VERBOSE] "
 };
 
+// https://i.stack.imgur.com/9UVnC.png
 #ifndef EZLOG_DISABLE_COLORS
     String EZLog::ANSICOLOR_RESET = "\033[0m";
-    String EZLog::ANSICOLOR_RED = "[1;31m";
-    String EZLog::ANSICOLOR_GREEN = "[1;32m";
-    String EZLog::ANSICOLOR_YELLOW = "[1;33m";
+    String EZLog::ANSICOLOR_RED = "\033[1;31m";
+    String EZLog::ANSICOLOR_GREEN = "\033[1;32m";
+    String EZLog::ANSICOLOR_YELLOW = "\033[1;33m";
     String EZLog::ANSICOLOR_WHITE = "\033[1;37m";
     String EZLog::ANSICOLOR_CYAN = "\033[1;36m";
     String EZLog::ANSICOLOR_BLUE = "\033[1;34m";
     String EZLog::ANSICOLOR_BLACK = "\033[1;30m";
-    String EZLog::ANSICOLOR_BRIGHT_MAGENTA = "[1;95m";
-    String EZLog::ANSICOLOR_BRIGHT_YELLOW = "[1;93m";
-    String EZLog::ANSICOLOR_BRIGHT_BLACK = "[1;90m";
-    String EZLog::ANSICOLOR_BRIGHT_RED = "[1;91m";
-    String EZLog::ANSICOLOR_BG_YELLOW_BRIGHT = "[1;103m";
-    String EZLog::ANSICOLOR_BG_GREEN = "[1;102m";
-    String EZLog::ANSICOLOR_BG_RED = "[1;101m";
-    String EZLog::ANSICOLOR_BG_CYAN = "[1;46m";
+    String EZLog::ANSICOLOR_BRIGHT_MAGENTA = "\033[1;95m";
+    String EZLog::ANSICOLOR_BRIGHT_YELLOW = "\033[1;93m";
+    String EZLog::ANSICOLOR_BRIGHT_BLACK = "\033[1;90m";
+    String EZLog::ANSICOLOR_BRIGHT_RED = "\033[1;91m";
+    String EZLog::ANSICOLOR_BG_BRIGHT_YELLOW = "\033[1;103m";
+    String EZLog::ANSICOLOR_BG_GREEN = "\033[1;102m";
+    String EZLog::ANSICOLOR_BG_RED = "\033[1;101m";
+    String EZLog::ANSICOLOR_BG_CYAN = "\033[1;46m";
+    String EZLog::ANSICOLOR_BG_YELLOW = "\033[1;43m";
+    String EZLog::ANSICOLOR_BG_BRIGHT_BLACK = "\033[1;100m";
+    String EZLog::ANSICOLOR_BG_BRIGHT_MAGENTA = "\033[1;105m";
 #else
     String EZLog::ANSICOLOR_RESET =             "";
     String EZLog::ANSICOLOR_RED =               "";
@@ -702,28 +710,31 @@ String EZLog::loglevelStrings[] = {
     String EZLog::ANSICOLOR_BRIGHT_YELLOW =     "";
     String EZLog::ANSICOLOR_BRIGHT_BLACK =      "";
     String EZLog::ANSICOLOR_BRIGHT_RED =        "";
-    String EZLog::ANSICOLOR_BG_YELLOW_BRIGHT =  "";
+    String EZLog::ANSICOLOR_BG_BRIGHT_YELLOW =  "";
     String EZLog::ANSICOLOR_BG_GREEN =          "";
     String EZLog::ANSICOLOR_BG_RED =            "";
     String EZLog::ANSICOLOR_BG_CYAN =           "";
+    String EZLog::ANSICOLOR_BG_YELLOW =         "";
+    String EZLog::ANSICOLOR_BG_BRIGHT_BLACK =   "";
+    String EZLog::ANSICOLOR_BG_BRIGHT_MAGENTA = "";
 #endif
 
 
-std::array<String, 4> EZLog::TaskIdColors = {
+std::vector<String> EZLog::TaskIdColors = {
     ANSICOLOR_WHITE,
     ANSICOLOR_BLUE,
     ANSICOLOR_YELLOW,
     ANSICOLOR_GREEN,
 };
 
-std::array<String, 3> EZLog::TaskIdBGColors = {
+std::vector<String> EZLog::TaskIdBGColors = {
     ANSICOLOR_RESET,
+    ANSICOLOR_BG_BRIGHT_BLACK,
     ANSICOLOR_BG_CYAN,
-    ANSICOLOR_BG_RED,
+    ANSICOLOR_BG_YELLOW,
 };
 
 
-// https://i.stack.imgur.com/9UVnC.png
 String EZLog::loglevelPrefixColors[] = {
     ANSICOLOR_RED, // 1=bold, 31=red
     ANSICOLOR_BRIGHT_MAGENTA,
@@ -731,13 +742,15 @@ String EZLog::loglevelPrefixColors[] = {
     ANSICOLOR_WHITE,
     ANSICOLOR_BRIGHT_BLACK,
 };
+
 String EZLog::loglevelTextColors[] = {
     ANSICOLOR_RED,
-    ANSICOLOR_RED, // ANSICOLOR_BLACK + ANSICOLOR_BG_YELLOW_BRIGHT,
+    ANSICOLOR_RED, // ANSICOLOR_BLACK + ANSICOLOR_BG_BRIGHT_YELLOW,
     ANSICOLOR_GREEN,
     ANSICOLOR_WHITE, // debug
     ANSICOLOR_BRIGHT_BLACK,
 };
+
 int EZLog::lastMemoryUsageHeap = 0;
 int EZLog::lastMemoryUsagePSRam = 0;
 LoggingConfig EZLog::config;

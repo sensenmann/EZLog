@@ -35,8 +35,8 @@ public:
 
     static String loglevelStrings[];
 
-    static std::array<String, 4> TaskIdColors;
-    static std::array<String, 3> TaskIdBGColors;
+    static std::vector<String> TaskIdColors;
+    static std::vector<String> TaskIdBGColors;
 
     static String loglevelPrefixColors[];
     static String loglevelTextColors[];
@@ -117,7 +117,7 @@ private:
     String _colorPrefix(String prefix, boolean isStart = false, boolean isEnd = false);
     void _addFreeMemToMessage();
 
-    String getBGColor();
+    String getBGColor() const;
     String ansiColorReset();
 
     static bool _shouldLog(const String& prefix, Loglevel requestedLoglevel);
@@ -151,10 +151,13 @@ public:
     static String ANSICOLOR_BRIGHT_YELLOW;
     static String ANSICOLOR_BRIGHT_BLACK;
     static String ANSICOLOR_BRIGHT_RED;
-    static String ANSICOLOR_BG_YELLOW_BRIGHT;
+    static String ANSICOLOR_BG_BRIGHT_YELLOW;
     static String ANSICOLOR_BG_GREEN;
     static String ANSICOLOR_BG_RED;
     static String ANSICOLOR_BG_CYAN;
+    static String ANSICOLOR_BG_YELLOW;
+    static String ANSICOLOR_BG_BRIGHT_BLACK;
+    static String ANSICOLOR_BG_BRIGHT_MAGENTA;
 };
 
 
