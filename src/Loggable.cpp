@@ -39,6 +39,6 @@
     }
 
     AutoLogFree::~AutoLogFree() {
-        EZLog::end();
+        if (enabled) EZLog::end();
     }
 #endif

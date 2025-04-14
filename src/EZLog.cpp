@@ -344,9 +344,9 @@ void EZLog::_msg(Loglevel loglevel, String msg, const boolean isStart, const boo
     if (!config.enabled) return;
 
     if (lastPrefix.equals("")) {
-        String msg = "EZLog ERROR: Log-Aufruf ohne gültigen Prefix (kein start() erfolgt?)";
-        config.customErrorAction(taskID, msg);
-        Serial.println(msg);
+        String errorMsg = "EZLog ERROR: Log-Aufruf ohne gültigen Prefix (kein start() erfolgt?)";
+        config.customErrorAction(taskID, errorMsg);
+        Serial.println(errorMsg);
         esp_backtrace_print(30);
         if (config.restartESPonError) {
             abort();
