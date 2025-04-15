@@ -26,7 +26,6 @@ EZLog* EZLog::getInstanceForCurrentTask() {
     TaskHandle_t currentTask = xTaskGetCurrentTaskHandle();
 
     static std::map<TaskHandle_t, EZLog*> logInstances;
-    static std::map<TaskHandle_t, int> taskIDs;
     static std::mutex logMutex;
 
     // locking the map, while accessing
@@ -47,11 +46,12 @@ EZLog* EZLog::getInstanceForCurrentTask() {
  *
  * !! DON'T CALL IT DIRECTLY !!
  */
-void EZLog::start(const String& cls, const String& method) {
+bool EZLog::start(const String& cls, const String& method) {
 #ifndef EZLOG_DISABLE_COMPLETELY
     EZLog* instance = getInstanceForCurrentTask();
-    instance->_start(cls, method);
+    return instance->_start(cls, method);
 #endif
+    return false;
 }
 
 /**
@@ -166,15 +166,13 @@ void EZLog::freeMem(const String& prefix, bool inBytes) {
  *************************************** */
 
 
-void EZLog::_start(const String& cls, const String& method) {
-    if (!config.enabled) return;
+bool EZLog::_start(const String& cls, const String& method) {
+    if (!config.enabled) return false;
 
     if (xSemaphoreTake(logSemaphoreStartStop, 1000 / portTICK_PERIOD_MS) != pdTRUE) {
         Serial.println("Log-Semaphore not available!");
         esp_backtrace_print(30);
-        while (true) {
-            delay(1);
-        }
+        return false;
     }
 
     classStack.push(cls);
@@ -185,7 +183,7 @@ void EZLog::_start(const String& cls, const String& method) {
     if (!_shouldLog(prefix, Loglevel::DEBUG)) {
         lastPrefix = prefix;
         xSemaphoreGive(logSemaphoreStartStop);
-        return;
+        return true;
     }
 
     newLineStarted = true;
@@ -194,6 +192,7 @@ void EZLog::_start(const String& cls, const String& method) {
     depth++;
 
     xSemaphoreGive(logSemaphoreStartStop);
+    return true;
 }
 
 void EZLog::_end() {
@@ -343,6 +342,16 @@ String EZLog::getBGColor() const {
 
 void EZLog::_msg(Loglevel loglevel, String msg, const boolean isStart, const boolean isEnd) {
     if (!config.enabled) return;
+
+    if (lastPrefix.equals("")) {
+        String errorMsg = "EZLog ERROR: Log-Aufruf ohne gültigen Prefix (kein start() erfolgt?)";
+        config.customErrorAction(taskID, errorMsg);
+        Serial.println(errorMsg);
+        esp_backtrace_print(30);
+        if (config.restartESPonError) {
+            abort();
+        }
+    }
 
     /** Handling Mutliline-Messages */
     char crlf = '\n';

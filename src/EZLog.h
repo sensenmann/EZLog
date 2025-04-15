@@ -70,7 +70,7 @@ public:
     static void updateConfig(const LoggingConfig& _loggingConfig);
 
 
-    static void start(const String& cls, const String& method);
+    static bool start(const String& cls, const String& method);
     static void end();
 
     static void error(const String& msg);
@@ -92,7 +92,7 @@ public:
 
 
 private:
-    void _start(const String& cls, const String& method);
+    bool _start(const String& cls, const String& method);
     void _end();
 
     void _msg(Loglevel loglevel, String msg, boolean isStart = false, boolean isEnd = false);

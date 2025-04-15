@@ -1,5 +1,3 @@
-// main.cpp
-
 /** Include Header-File: */
 #include <Arduino.h>
 #include "EZLog.h"
