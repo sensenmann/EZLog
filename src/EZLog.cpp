@@ -175,3 +175,10 @@ void EZLog::freeMem(const String& prefix, bool inBytes) {
 
 LoggingConfig EZLog::config;
 
+String EZLog::loglevelStrings[] = {
+    "[ERROR]   ",
+    "[WARN]    ",
+    "[INFO]    ",
+    "[DEBUG]   ",
+    "[VERBOSE] "
+};

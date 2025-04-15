@@ -64,6 +64,8 @@ private:
 
 
 public:
+    static String loglevelStrings[];
+
     static String ANSICOLOR_RESET;
     static String ANSICOLOR_RED;
     static String ANSICOLOR_GREEN;
