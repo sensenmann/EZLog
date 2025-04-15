@@ -27,48 +27,11 @@
 
 
 class EZLog {
-public:
-    /**
-     * Creates a EZLog-Instance for a taskID (usefull for multiple Threads)
-     */
-    EZLog(int _taskID) { this->taskID = _taskID; }
-
-    static String loglevelStrings[];
-
-    static std::vector<String> TaskIdColors;
-    static std::vector<String> TaskIdBGColors;
-
-    static String loglevelPrefixColors[];
-    static String loglevelTextColors[];
-
-private:
-    /** Singleton Werte (für alle Instanzen): */
-    static LoggingConfig config;
-    static int lastMemoryUsageHeap;
-    static int lastMemoryUsagePSRam;
-    static int lastTaskID;
-    static SemaphoreHandle_t logSemaphoreStartStop;
-    static SemaphoreHandle_t logSemaphoreMessage;
-
-private:;
-    int taskID = 0;
-    int depth = 0;
-    bool newLineStarted = true;
-    std::stack<String> classStack;
-    std::stack<String> methodStack;
-    std::stack<unsigned long> startTimeStack;
-    String lastPrefix = "";
-    String multilineBuffer = "";
-    Loglevel lastloglevel = Loglevel::ERROR;
-
-private:
-    static EZLog* getInstanceForCurrentTask();
 
 public:
     // Init:
     static void init(const LoggingConfig& _loggingConfig);
     static void updateConfig(const LoggingConfig& _loggingConfig);
-
 
     static bool start(const String& cls, const String& method);
     static void end();
@@ -92,51 +55,13 @@ public:
 
 
 private:
-    bool _start(const String& cls, const String& method);
-    void _end();
-
     void _msg(Loglevel loglevel, String msg, boolean isStart = false, boolean isEnd = false);
 
-    void _errorln(const String& msg = "");
 
-    void _warn(const String& msg);
-    void _warnln(const String& msg = "");
+private:
+    /** Singleton Werte (für alle Instanzen): */
+    static LoggingConfig config;
 
-    void _info(const String& msg);
-    void _infoln(const String& msg = "");
-
-    void _debug(const String& msg);
-    void _debugln(const String& msg = "");
-
-    void _verbose(const String& msg);
-    void _verboseln(const String& msg = "");
-
-    static void _freeMem(const String& prefix, bool inBytes = false);
-    static void _freeMem();
-
-    String _colorPrefix(String prefix, boolean isStart = false, boolean isEnd = false);
-    void _addFreeMemToMessage();
-
-    String getBGColor() const;
-    String ansiColorReset();
-
-    static bool _shouldLog(const String& prefix, Loglevel requestedLoglevel);
-    bool _shouldLog(Loglevel loglevel) const;
-
-    /** Timestamp-Prefix: */
-    String ts();
-
-
-    /** String-Tools: */
-    static std::vector<std::string> split(const std::string& s, char delimiter);
-    static std::vector<char*> split(char* str, char delimiter);
-    static std::vector<String> split(const std::string& input, const std::string& delimiter);
-    static String ltrim(const std::string& s);
-    static String rtrim(const std::string& s);
-    static String trim(const std::string& s);
-
-    /** Formatiert Ganz-Zahl mit tausender-Punkt(en) */
-    static String formatNumber(int number);
 
 public:
     static String ANSICOLOR_RESET;
