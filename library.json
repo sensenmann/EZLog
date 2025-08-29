@@ -1,6 +1,6 @@
 {
   "name": "EZLog",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "keywords": "Arduino, ESP32, Logging, Conversion",
   "description": "An easy Logging-Framework for ESP32",
   "authors":
