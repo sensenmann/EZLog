@@ -12,6 +12,7 @@ void setup() {
     /** Create a simple loggingConfig: */
     LoggingConfig loggingConfig = {};
     loggingConfig.loglevel = Loglevel::VERBOSE;
+    loggingConfig.addMemInfo = true;
 
     /** Setup EZLog: */
     Log::init(loggingConfig);

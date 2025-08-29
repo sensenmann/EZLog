@@ -344,7 +344,7 @@ void EZLog::_msg(Loglevel loglevel, String msg, const boolean isStart, const boo
     if (!config.enabled) return;
 
     if (lastPrefix.equals("")) {
-        String errorMsg = "EZLog ERROR: Log-Aufruf ohne gültigen Prefix (kein start() erfolgt?)";
+        const String errorMsg = "EZLog ERROR: Log-Aufruf ohne gültigen Prefix (kein start() erfolgt?)";
         config.customErrorAction(taskID, errorMsg);
         Serial.println(errorMsg);
         esp_backtrace_print(30);
@@ -354,8 +354,8 @@ void EZLog::_msg(Loglevel loglevel, String msg, const boolean isStart, const boo
     }
 
     /** Handling Mutliline-Messages */
-    char crlf = '\n';
-    size_t occurrences = std::count(msg.begin(), msg.end(), crlf);
+    constexpr char crlf = '\n';
+    const size_t occurrences = std::count(msg.begin(), msg.end(), crlf);
 
     if (occurrences > 1) {
         std::istringstream tokenStream(msg.c_str());
@@ -471,23 +471,16 @@ void EZLog::_msg(Loglevel loglevel, String msg, const boolean isStart, const boo
 void EZLog::_addFreeMemToMessage() {
     if (!config.addMemInfo) return;
 
-    int freeMem = esp_get_free_heap_size();
-    // int freeMemKB = freeMem / 1024;
-    int largestFreeBlock = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT);
-    int largestFreeBlockKB = largestFreeBlock / 1024;
-    // UBaseType_t stackHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
-
     multilineBuffer =
         ANSICOLOR_BRIGHT_YELLOW + " [ " +
-        ANSICOLOR_WHITE + String(formatNumber(heap_caps_get_free_size(MALLOC_CAP_DMA) / 1024)) +
-        " kB " +
-        //            ANSICOLOR_BRIGHT_YELLOW + "/ " +
-        //            ANSICOLOR_WHITE + String(formatNumber(freeMemKB)) + " kB " +
-        ANSICOLOR_BRIGHT_YELLOW + "/ " +
-        ANSICOLOR_WHITE + String(formatNumber(largestFreeBlockKB)) + " kB " +
-        //            ANSICOLOR_BRIGHT_YELLOW + "/ " +
-        //            ANSICOLOR_WHITE + String(stackHighWaterMark)  +
-        ANSICOLOR_BRIGHT_YELLOW + " ] " +
+        ANSICOLOR_WHITE + String(formatNumber(static_cast<int>(heap_caps_get_free_size(MALLOC_CAP_DMA)) / 1024)) + " kB " +         // Free HEAP
+        "(" +
+        ANSICOLOR_CYAN + String(formatNumber(static_cast<int>(heap_caps_get_largest_free_block(MALLOC_CAP_DMA)) / 1024)) + " kB" + ANSICOLOR_WHITE +        // largest free  HEAP Block
+        ")" +
+
+        ANSICOLOR_BRIGHT_YELLOW + " / " +
+        ANSICOLOR_WHITE + String(formatNumber(static_cast<int>(heap_caps_get_free_size(MALLOC_CAP_8BIT)) / 1024)) + " kB " +        // PSRAM
+        ANSICOLOR_BRIGHT_YELLOW + "] " +
         multilineBuffer;
 }
 
