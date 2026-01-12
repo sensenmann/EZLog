@@ -41,7 +41,7 @@ An easy Logging-Framework for ESP32.
 
 void setup() {
     Serial.begin(115200);
-    Log::init({ .defaultLoglevel = Loglevel::DEBUG });
+    Log::init({ .loglevel = Loglevel::DEBUG });
 }
 
 void loop() {
@@ -67,7 +67,7 @@ void setup() {
     Serial.begin(115200);
     
     /** Init EZLog: */
-    Log::init({ .defaultLoglevel = Loglevel::DEBUG });
+    Log::init({ .loglevel = Loglevel::DEBUG });
 }
 ```
 
@@ -167,6 +167,5 @@ You can find a description of the available logging-methods in the [API Document
 | `Loglevel::VERBOSE` | Extreme detailed information, which is only relevant for debugging. |
 | `Loglevel::DEBUG`   | Detailed information, which is only relevant for debugging.         |
 | `Loglevel::INFO`    | General information about the program flow.                         |
-| `Loglevel::WARNING` | Indicates a potential problem, which is not critical.               |
+| `Loglevel::WARN`    | Indicates a potential problem, which is not critical.               |
 | `Loglevel::ERROR`   | Indicates a critical problem, which should be fixed.                |
-
