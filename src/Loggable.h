@@ -1,7 +1,9 @@
 #ifndef LOGGABLE_H
 #define LOGGABLE_H
 
-#include "EZLog.h"
+#include <Arduino.h>
+
+class EZLog;
 
 #ifndef EZLOG_DISABLE_COMPLETELY
     class AutoLog {
@@ -10,6 +12,7 @@
         ~AutoLog();
     private:
         bool enabled = false;
+        EZLog* instance = nullptr;
     };
 
 
@@ -44,6 +47,7 @@
     private:
         static String extractClassName(const String& filePath);
         bool enabled = false;
+        EZLog* instance = nullptr;
     };
 
     // Makro for Logging in this free functions

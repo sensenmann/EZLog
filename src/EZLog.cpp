@@ -23,7 +23,7 @@ void EZLog::updateConfig(const LoggingConfig& _loggingConfig) {
  * This is necessary, if there are more than one task (multiple Cores/ multiple Tasks) using EZLog.
  */
 EZLog* EZLog::getInstanceForCurrentTask() {
-    TaskHandle_t currentTask = xTaskGetCurrentTaskHandle();
+    const TaskHandle_t currentTask = xTaskGetCurrentTaskHandle();
 
     static std::map<TaskHandle_t, EZLog*> logInstances;
     static std::mutex logMutex;
@@ -180,7 +180,10 @@ bool EZLog::_start(const String& cls, const String& method) {
     startTimeStack.push(millis());
     String prefix = cls + "::" + method;
 
-    if (!_shouldLog(prefix, Loglevel::DEBUG)) {
+    const bool shouldLog = _shouldLog(prefix, Loglevel::DEBUG);
+    depthStack.push(shouldLog);
+
+    if (!shouldLog) {
         lastPrefix = prefix;
         xSemaphoreGive(logSemaphoreStartStop);
         return true;
@@ -224,7 +227,17 @@ void EZLog::_end() {
     methodStack.pop();
     startTimeStack.pop();
 
-    if (prefix.length() == 0 || !_shouldLog(prefix, Loglevel::DEBUG)) {
+    if (depthStack.empty()) {
+        _warnln("EZLog ERROR - depthStack empty");
+    }
+
+    bool shouldLog = false;
+    if (!depthStack.empty()) {
+        shouldLog = depthStack.top();
+        depthStack.pop();
+    }
+
+    if (prefix.length() == 0 || !shouldLog) {
         if (!classStack.empty() && !methodStack.empty()) {
             cls = classStack.top();
             method = methodStack.top();
@@ -235,7 +248,7 @@ void EZLog::_end() {
     }
     depth--;
     if (depth < 0) {
-        warnln("ERROR - depth < 0:  " + String(depth));
+        _warnln("ERROR - depth < 0:  " + String(depth));
     }
 
     if (!newLineStarted) {
@@ -625,8 +638,8 @@ std::vector<String> EZLog::split(const std::string& input, const std::string& de
 }
 
 String EZLog::ltrim(const std::string& s) {
-    size_t start = s.find_first_not_of(" \t\n\r\f\v");
-    return String((start == std::string::npos) ? "" : s.substr(start).c_str());
+    const size_t start = s.find_first_not_of(" \t\n\r\f\v");
+    return (start == std::string::npos) ? "" : s.substr(start).c_str();
 }
 
 String EZLog::rtrim(const std::string& s) {
@@ -643,8 +656,8 @@ String EZLog::formatNumber(const int number) {
     ss << number;
     const std::string numberStr = ss.str();
 
-    const int len = numberStr.length();
-    const int numCommas = (len - 1) / 3;
+    const size_t len = numberStr.length();
+    const size_t numCommas = (len - 1) / 3;
     if (numCommas == 0)
         return numberStr.c_str();
 
