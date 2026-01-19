@@ -62,7 +62,7 @@ struct LoggingConfig {
     std::function<void(int taskID, String msg)> customVerboseAction = [](const int taskID, const String& msg) {};
 
     // Custom LoggingElement-Configurations can be used, to override the default logLevel for matching messages.
-    // Example: You can set the default-logLevel to DEBUG, but teh loglevel vor alle Methods from class "xyz" to VERBOSE
+    // Example: You can set the default-logLevel to DEBUG, but the loglevel for all methods from class "xyz" to VERBOSE
     std::vector<LoggingElement> customLoggingElements;
 };
 
