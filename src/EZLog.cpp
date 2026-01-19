@@ -484,6 +484,14 @@ void EZLog::_msg(Loglevel loglevel, String msg, const boolean isStart, const boo
 void EZLog::_addFreeMemToMessage() {
     if (!config.addMemInfo) return;
 
+    const bool psramAvailable = heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0;
+    const int freePsramKb = psramAvailable
+        ? static_cast<int>(heap_caps_get_free_size(MALLOC_CAP_SPIRAM)) / 1024
+        : 0;
+    const int largestPsramBlockKb = psramAvailable
+        ? static_cast<int>(heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM)) / 1024
+        : 0;
+
     multilineBuffer =
         ANSICOLOR_BRIGHT_YELLOW + " [ " +
         ANSICOLOR_WHITE + String(formatNumber(static_cast<int>(heap_caps_get_free_size(MALLOC_CAP_DMA)) / 1024)) + " kB " +         // Free HEAP
@@ -492,7 +500,10 @@ void EZLog::_addFreeMemToMessage() {
         ")" +
 
         ANSICOLOR_BRIGHT_YELLOW + " / " +
-        ANSICOLOR_WHITE + String(formatNumber(static_cast<int>(heap_caps_get_free_size(MALLOC_CAP_8BIT)) / 1024)) + " kB " +        // PSRAM
+        ANSICOLOR_WHITE + "PSRAM " +
+        (psramAvailable
+            ? String(formatNumber(freePsramKb)) + " kB "
+            : String("n/a ")) +
         ANSICOLOR_BRIGHT_YELLOW + "] " +
         multilineBuffer;
 }
@@ -546,31 +557,44 @@ bool EZLog::_shouldLog(const Loglevel loglevel) const {
 void EZLog::_freeMem(const String& prefix, const bool inBytes) {
     if (!_shouldLog(prefix, Loglevel::DEBUG)) return;
 
-    const int freePSRam = esp_get_free_heap_size() * (inBytes ? 1 : 1.0 / 1024.0);
+    const bool psramAvailable = heap_caps_get_total_size(MALLOC_CAP_SPIRAM) > 0;
+    const int freePSRam = psramAvailable
+        ? heap_caps_get_free_size(MALLOC_CAP_SPIRAM) * (inBytes ? 1 : 1.0 / 1024.0)
+        : 0;
     const int freeHeap = heap_caps_get_free_size(MALLOC_CAP_DMA) * (inBytes ? 1 : 1.0 / 1024.0);
     UBaseType_t stackHighWaterMark = uxTaskGetStackHighWaterMark(nullptr);
     const String unit = inBytes ? "B" : "kB";
-    const int largestFreeBlock = heap_caps_get_largest_free_block(MALLOC_CAP_8BIT) * (inBytes ? 1 : 1.0 / 1024.0);
+    const int largestFreeBlock = psramAvailable
+        ? heap_caps_get_largest_free_block(MALLOC_CAP_SPIRAM) * (inBytes ? 1 : 1.0 / 1024.0)
+        : 0;
     //    if (!newLineStarted) {
     Serial.println();
     //        newLineStarted = true;
     //    }
     if (!prefix.equals("")) {
-        Serial.print(String(prefix));
+    Serial.print(String(prefix));
         Serial.print(std::string((strlen(prefix.c_str()) < 40 ? 40 - strlen(prefix.c_str()) : 0), ' ').c_str());
     }
     Serial.print("- Free Mem: " + ANSICOLOR_GREEN + formatNumber(freeHeap) + " " + unit + ANSICOLOR_RESET);
     // Serial.print(" - Free Mem: " + ANSICOLOR_GREEN + formatNumber(freePSRam) + " " + unit + ANSICOLOR_WHITE);
-    Serial.print(",\tPSRAM: " + ANSICOLOR_GREEN + formatNumber(largestFreeBlock) + " " + unit +
-        ANSICOLOR_WHITE);
+    if (psramAvailable) {
+        Serial.print(",\tPSRAM: " + ANSICOLOR_GREEN + formatNumber(largestFreeBlock) + " " + unit +
+            ANSICOLOR_WHITE);
+    } else {
+        Serial.print(",\tPSRAM: " + ANSICOLOR_GREEN + String("n/a") + ANSICOLOR_WHITE);
+    }
     Serial.print(",\tDelta Heap: " + (String(freeHeap - lastMemoryUsageHeap)) + " " + unit);
-    Serial.print(",\tDelta PSRAM: " + (String(freePSRam - lastMemoryUsagePSRam)) + " " + unit);
+    if (psramAvailable) {
+        Serial.print(",\tDelta PSRAM: " + (String(freePSRam - lastMemoryUsagePSRam)) + " " + unit);
+    } else {
+        Serial.print(",\tDelta PSRAM: n/a");
+    }
     Serial.print(",\tFree Stack: " + ANSICOLOR_GREEN + String(stackHighWaterMark) + ANSICOLOR_RESET);
 
     Serial.println();
 
     lastMemoryUsageHeap = freeHeap;
-    lastMemoryUsagePSRam = freePSRam;
+    lastMemoryUsagePSRam = psramAvailable ? freePSRam : 0;
 }
 
 void EZLog::_freeMem() {
