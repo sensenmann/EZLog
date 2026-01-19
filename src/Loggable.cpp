@@ -27,18 +27,20 @@
     }
 
     AutoLog::AutoLog(const String &cls, const String &method) {
-       enabled = EZLog::start(cls, method);
+        instance = EZLog::getInstanceForCurrentTask();
+        enabled = instance->_start(cls, method);
     }
 
     AutoLog::~AutoLog() {
-        if (enabled) EZLog::end();
+        if (enabled && instance) instance->_end();
     }
 
     AutoLogFree::AutoLogFree(const String &fileName, const String &method) {
-        enabled = EZLog::start(extractClassName(fileName), method);
+        instance = EZLog::getInstanceForCurrentTask();
+        enabled = instance->_start(extractClassName(fileName), method);
     }
 
     AutoLogFree::~AutoLogFree() {
-        if (enabled) EZLog::end();
+        if (enabled && instance) instance->_end();
     }
 #endif

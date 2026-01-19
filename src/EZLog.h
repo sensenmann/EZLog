@@ -27,6 +27,8 @@
 
 
 class EZLog {
+    friend class AutoLog;
+    friend class AutoLogFree;
 public:
     /**
      * Creates a EZLog-Instance for a taskID (usefull for multiple Threads)
@@ -57,6 +59,7 @@ private:;
     std::stack<String> classStack;
     std::stack<String> methodStack;
     std::stack<unsigned long> startTimeStack;
+    std::stack<bool> depthStack;
     String lastPrefix = "";
     String multilineBuffer = "";
     Loglevel lastloglevel = Loglevel::ERROR;

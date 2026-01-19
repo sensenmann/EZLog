@@ -180,7 +180,10 @@ bool EZLog::_start(const String& cls, const String& method) {
     startTimeStack.push(millis());
     String prefix = cls + "::" + method;
 
-    if (!_shouldLog(prefix, Loglevel::DEBUG)) {
+    const bool shouldLog = _shouldLog(prefix, Loglevel::DEBUG);
+    depthStack.push(shouldLog);
+
+    if (!shouldLog) {
         lastPrefix = prefix;
         xSemaphoreGive(logSemaphoreStartStop);
         return true;
@@ -224,7 +227,17 @@ void EZLog::_end() {
     methodStack.pop();
     startTimeStack.pop();
 
-    if (prefix.length() == 0 || !_shouldLog(prefix, Loglevel::DEBUG)) {
+    if (depthStack.empty()) {
+        _warnln("EZLog ERROR - depthStack empty");
+    }
+
+    bool shouldLog = false;
+    if (!depthStack.empty()) {
+        shouldLog = depthStack.top();
+        depthStack.pop();
+    }
+
+    if (prefix.length() == 0 || !shouldLog) {
         if (!classStack.empty() && !methodStack.empty()) {
             cls = classStack.top();
             method = methodStack.top();
@@ -235,7 +248,7 @@ void EZLog::_end() {
     }
     depth--;
     if (depth < 0) {
-        warnln("ERROR - depth < 0:  " + String(depth));
+        _warnln("ERROR - depth < 0:  " + String(depth));
     }
 
     if (!newLineStarted) {
